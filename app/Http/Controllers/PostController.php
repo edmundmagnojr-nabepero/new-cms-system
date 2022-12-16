@@ -8,17 +8,22 @@ use Illuminate\Support\Facades\Session;
 
 class PostController extends Controller
 {
-    
+    public function index(){
+        $posts = auth()->user()->posts()->paginate(5);
+        return view('admin.posts.index', ['posts'=>$posts]);
+    }
     
     public function show(Post $post){
         return view('blog-post', ['post'=>$post]);
     }
 
     public function create(){
+        $this->authorize('create', Post::class);
         return view('admin.posts.create');
     }
 
     public function store(){
+        $this->authorize('create', Post::class);
         $inputs = request()->validate([
             'title'=>'required|min:8|max:255',
             'post_image'=>'file',
@@ -34,18 +39,15 @@ class PostController extends Controller
         return redirect()->route('post.index');
     }
 
-    public function index(){
-        $posts = Post::all();
-        return view('admin.posts.index', ['posts'=>$posts]);
-    }
-
     public function destroy(Post $post){
+        $this->authorize('delete', $post);
         $post->delete();
         Session::flash('message', 'Post was deleted');
         return back();
     }
 
     public function edit(Post $post){
+        //$this->authorize('view', $post);
         return view('admin.posts.edit', ['post'=>$post]);
     }
 
@@ -62,6 +64,7 @@ class PostController extends Controller
         $post->title = $inputs['title'];
         $post->body = $inputs['body'];
 
+        $this->authorize('update', $post);
         $post->save();
         //auth()->user()->posts()->save($inputs);
         session()->flash('post-updated-message', 'Post was updated'.$inputs['title']);
