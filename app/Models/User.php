@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'username',
         'name',
+        'avatar',
         'email',
         'password',
     ];
@@ -74,7 +75,7 @@ class User extends Authenticatable
         return asset('storage/' . $value);
     }
 
-    public function setAvatarAttribute($value){
-        $this->attributes['avatar']->asset($value);
-    }
+    // public function setAvatarAttribute($value){
+    //     $this->attributes['avatar']->asset($value);
+    // }
 }
